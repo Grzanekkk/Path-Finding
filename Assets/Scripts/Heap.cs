@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 public class Heap<T> where T : IHeapItem<T>
@@ -8,6 +9,14 @@ public class Heap<T> where T : IHeapItem<T>
     T[] items;
     int currentItemCount;
 
+
+    public int Count
+    {
+        get
+        {
+            return currentItemCount;
+        }
+    }
     public Heap(int maxHeapSize)
     {
         items = new T[maxHeapSize];
@@ -21,6 +30,63 @@ public class Heap<T> where T : IHeapItem<T>
         currentItemCount++;
     }
 
+    public T RemoveFirst()
+    {
+        T firstItem = items[0];
+        currentItemCount--;
+        items[0] = items[currentItemCount];
+        items[0].HeapIndex = 0;
+        SortDown(items[0]);
+        return firstItem;       // item with lowest fCost, after removing previous one 
+    }
+
+    public void UpdateItem(T item)
+    {
+        SortUp(item);
+    }
+
+    public bool Contains(T item)
+    {
+        return Equals(items[item.HeapIndex], item);
+    }
+
+    void SortDown(T item)       // item == parent
+    {
+        while (true)
+        {
+            int childIndexLeft = 2 * item.HeapIndex + 1;
+            int childIndexRight = 2 * item.HeapIndex + 2;
+            int swapIndex = 0;
+
+            if (childIndexLeft < currentItemCount)  // Sprawdzamy czy child znajduje się w naszej tablicy. if false = child znajduje się poza tablicą
+            {
+                swapIndex = childIndexLeft;
+
+                if (childIndexRight < currentItemCount)
+                {
+                    if (items[childIndexLeft].CompareTo(items[childIndexRight]) < 0)
+                    {
+                        swapIndex = childIndexRight;
+                    }
+                }
+
+                if (item.CompareTo(items[swapIndex]) < 0)
+                {
+                    Swap(item, items[swapIndex]);
+                }
+                else
+                {
+                    return;     // parent jest na odpowiednim miejscu
+                }
+            }
+            else
+            {
+                return;     // parent nie ma childów
+            }
+
+
+        }
+    }
 
     void SortUp(T item)
     {
@@ -33,6 +99,12 @@ public class Heap<T> where T : IHeapItem<T>
             {
                 Swap(item, parentItem);
             }
+            else
+            {
+                break;
+            }
+
+            parentIndex = (item.HeapIndex - 1) / 2;
         }
     }
 
