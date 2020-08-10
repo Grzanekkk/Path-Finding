@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour                                                   
 {
-    public bool onlyDispalyPathGizmos;
+    public bool dispalyGridGizmos;
 
     public Transform player;
     public LayerMask unwalkableMask;                                                
@@ -87,43 +87,17 @@ public class Grid : MonoBehaviour
         return neighbours;
     }
 
-    public List<Node> path;
+
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-
-        if (onlyDispalyPathGizmos)
+     
+        if (grid != null && dispalyGridGizmos)
         {
-            if (path != null)
+            foreach (Node n in grid)
             {
-                foreach (Node n in path)
-                {
-                    Gizmos.color = Color.blue;
-                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
-                }
-            }
-        }
-        else
-        {
-            if (grid != null)
-            {
-                foreach (Node n in grid)
-                {
-                    Node playerNode = NodeFromWorldPoint(player.position);
-                    Gizmos.color = (n.walkable) ? Color.green : Color.red;      // ? = THEN, : = ELSE
-                    if (path != null)
-                    {
-                        if (playerNode == n)
-                        {
-                            Gizmos.color = Color.magenta;
-                        }
-                        else if (path.Contains(n))
-                        {
-                            Gizmos.color = Color.blue;
-                        }
-                    }
-                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
-                }
+                Gizmos.color = (n.walkable) ? Color.green : Color.red;      // ? = THEN, : = ELSE
+                Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
         }
     }
