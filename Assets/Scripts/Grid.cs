@@ -9,7 +9,9 @@ public class Grid : MonoBehaviour
     public Transform player;
     public LayerMask unwalkableMask;                                                
     public Vector2 gridWorldSize;                                                   
-    public float nodeRadius;    // Promień                                          
+    public float nodeRadius;    // Promień   
+    public TerrainType[] walkableRegions;
+    LayerMask walkableMask;
     Node[,] grid;                                                                   
                                                                                     
     float nodeDiameter;     // Średnica                                             
@@ -23,11 +25,16 @@ public class Grid : MonoBehaviour
         }
     }
                                                                                     
-    private void Start()                                                            
+    private void Awake()                                                            
     {                                                                               
         nodeDiameter = nodeRadius * 2;                                              
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);               
-        gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);               
+        gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+
+        foreach (TerrainType region in walkableRegions)
+        { 
+
+        }
                                                                                     
         CreateGrid();                                                               
     }                                                                               
@@ -44,7 +51,12 @@ public class Grid : MonoBehaviour
             {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);     // Ustalenie punktu w przestrzenieni każdej komórki/Node (Środka)
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
-                grid[x, y] = new Node(walkable, worldPoint, x, y);
+
+                int movementPenalty = 0;
+
+                // raycast 
+
+                grid[x, y] = new Node(walkable, worldPoint, x, y, movementPenalty);
             }
         }
     }
@@ -100,5 +112,12 @@ public class Grid : MonoBehaviour
                 Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
         }
+    }
+
+    [System.Serializable]
+    public class TerrainType
+    {
+        public LayerMask terrainMask;
+        public int terainPenalty;
     }
 }

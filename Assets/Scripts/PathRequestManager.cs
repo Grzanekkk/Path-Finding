@@ -34,8 +34,7 @@ public class PathRequestManager : MonoBehaviour
         {
             currentPathRequest = pathRequestQueue.Dequeue();    // zwraca pierwszy element z kolejki i usuwa go z niej
             isProcessingPath = true;
-            //pathFinding.StartFindPath(currentPathRequest.pathStart, )
-
+            pathFinding.StartFindPath(currentPathRequest.pathStart, currentPathRequest.pathEnd);
         }
     }
 
