@@ -14,6 +14,7 @@ public class Grid : MonoBehaviour
     public int obstacleProximityPenalty = 10;
     LayerMask walkableMask;
     Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
+    int maxTerrainPenalty = 0;
 
     Node[,] grid;                                                                   
                                                                                     
@@ -41,6 +42,10 @@ public class Grid : MonoBehaviour
         {
             walkableMask.value |= region.terrainMask.value;
             walkableRegionsDictionary.Add(Mathf.RoundToInt(Mathf.Log(region.terrainMask.value,2)), region.terainPenalty);
+            if (region.terainPenalty >= maxTerrainPenalty)
+            {
+                maxTerrainPenalty = region.terainPenalty;
+            }
         }
                                                                                     
         CreateGrid();                                                               
@@ -95,7 +100,7 @@ public class Grid : MonoBehaviour
             for (int x = -kernelExtents; x <= kernelExtents; x++)
             {
                 int sampleX = Mathf.Clamp(x, 0, kernelExtents);
-                penaltiesHorizontalPass[0, y] += grid[sampleX, y].movementPenalty;
+                penaltiesHorizontalPass[0, y] += Mathf.Clamp(grid[sampleX, y].movementPenalty, 0, maxTerrainPenalty);
             }
 
             for(int x = 1; x < gridSizeX; x++)
@@ -140,6 +145,7 @@ public class Grid : MonoBehaviour
                 }
             }
         }
+        Debug.Log($"Min:{penaltyMin}, Max:{penaltyMax}");
     }
 
     public Node NodeFromWorldPoint(Vector3 worldPosition)
