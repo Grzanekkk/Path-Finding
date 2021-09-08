@@ -1,2 +1,2 @@
 # Path-Finding
-System Path-Findingu pisany w C# na potrzeby silnika Unity
+A* Path-finding system written for usage in Unity
